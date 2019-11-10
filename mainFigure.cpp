@@ -18,22 +18,23 @@
 
 #define HEIGHT 720
 #define WIDTH 1280
+int count = 0;
 
-PrismHexagonal prH(0, 0, 0, 12, 8, 2);
-PyramidPentagonal pyP(20, 0, 0, 12, 8);
-PyramidTriangular pyT(40, 0, 0, 10, 14);
-PyramidHexagonal pyH(60, 0, 0, 10,14);
-PrismPentagonal prP(80, 0, 0, 10, 15, 1);
-PrismCuadrangular prC(100, 0, 0, 10, 14, 9);
-PrismTriangular prT(120, 0, 0, 20, 10);
-Cube cubito(140, 0, 0, 15, 1);
+PrismHexagonal prH(-0, 0, 0, 100, 50, 2);
+PyramidPentagonal pyP(-60, 0, 0, 100,50);
+PyramidTriangular pyT(400, 0, 0, 10, 14);
+PyramidHexagonal pyH(600, 0, 0, 10, 14);
+PrismPentagonal prP(120, 0, 0, 10, 15, 1);
+PrismCuadrangular prC(150, 0, 0, 10, 14, 9);
+PrismTriangular prT(180, 0, 0, 20, 10);
+Cube cubito(210, 0, 0, 15, 1);
 float angle = 0.0;
 
 void initializer(void) {
 	glClearColor(1.0, 1.0, 1.0, 0.0); // COLOR CANVAS
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(-50.0, 50.0, -50.0, 50.0, -50.0, 50.0);
+	glOrtho(-350.0, 350.0, -350.0, 350.0, -150.0, 150.0);
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_DEPTH_TEST);
 }
@@ -45,22 +46,29 @@ void idle_cb() {
 
 void displayScreen(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	glLoadIdentity();
 	glViewport(150, 150, 300, 300);
 
+	cubito.drawFigure();
 	pyT.drawFigure();
 	pyH.drawFigure();
 	pyP.drawFigure();
 	prP.drawFigure();
 	prT.drawFigure();
 	prC.drawFigure();
-	prH.drawFigure();
-	cubito.drawFigure();
+	/*glPushMatrix();
+		glTranslatef(-250,0,0);
+		glRotatef(50.0, 1.0, 1.0, 1.0);
+		prH.drawFigure();
+	glPopMatrix();*/
 
 	glutSwapBuffers();
 }
 
 void teclado_cb(GLubyte key, GLint x, GLint y) {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glViewport(150, 150, 300, 300);
 	switch (key) {
 	case 27:
 		//exit(1);
@@ -95,7 +103,32 @@ void teclado_cb(GLubyte key, GLint x, GLint y) {
 
 	}
 	glutPostRedisplay();
+	glutSwapBuffers();
+}
 
+void timeValue(int value) {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+
+	if (count!=0)
+	{
+		glPushMatrix();
+			glTranslatef(0, 0, 0);
+			glRotatef(5.0, 1.0, 1.0, 1.0);
+			prH.drawFigure();
+		glPopMatrix();
+	}
+	else {
+		glPushMatrix();
+			glTranslatef(-250, 0, 0);
+			glRotatef(5.0, 1.0, 1.0, 1.0);
+			prH.drawFigure();
+		glPopMatrix();
+		count++;
+	}
+	glutPostRedisplay();
+	glutSwapBuffers();
+	glutTimerFunc(1000, timeValue, 0);
 }
 
 int main(int argc, char* argv[]) {
@@ -109,6 +142,7 @@ int main(int argc, char* argv[]) {
 	initializer(); // INICIALIZA LA VENTANA
 	glutDisplayFunc(displayScreen); // ACTUALIZA LA PANTALLA DE TRAZADO
 	glutKeyboardFunc(teclado_cb);
+	glutTimerFunc(1000,timeValue,0);
 	glutIdleFunc(idle_cb);
 
 	glutMainLoop(); // GENERA EL LOOP
